@@ -3,34 +3,249 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>bkt builds</title>
+    <title>bkt.new — Install bkt in seconds</title>
+    <meta name="description" content="Install the bkt Bitbucket CLI from GitHub Pages builds." />
     <style>
-      :root { color-scheme: light dark; }
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width: 860px; margin: 40px auto; padding: 0 16px; }
-      code { padding: 2px 6px; border-radius: 6px; background: rgba(127,127,127,.15); }
-      .card { padding: 16px; border: 1px solid rgba(127,127,127,.35); border-radius: 12px; }
-      ul { line-height: 1.8; }
+      :root {
+        color-scheme: light dark;
+        --bg: #0c0c0f;
+        --fg: #f4f4f5;
+        --muted: #a1a1aa;
+        --accent: #6366f1;
+        --card: rgba(255, 255, 255, 0.06);
+        --border: rgba(255, 255, 255, 0.12);
+        --tab-inactive: rgba(255, 255, 255, 0.08);
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #fafafa;
+          --fg: #18181b;
+          --muted: #71717a;
+          --card: #fff;
+          --border: #e4e4e7;
+          --tab-inactive: #f4f4f5;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        line-height: 1.6;
+      }
+      .wrap { max-width: 640px; margin: 0 auto; padding: 48px 20px 80px; }
+      .brand {
+        font-size: clamp(2rem, 6vw, 3rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 8px;
+      }
+      .brand span { color: var(--accent); }
+      h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .tab {
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--tab-inactive);
+        color: var(--fg);
+        font-size: 0.95rem;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .tab:hover { opacity: 0.9; }
+      .tab.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 24px;
+      }
+      .label { font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; }
+      .cmd-row {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+        flex-wrap: wrap;
+      }
+      pre.cmd {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--border);
+        font-size: 0.8rem;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      @media (prefers-color-scheme: light) {
+        pre.cmd { background: #f4f4f5; }
+      }
+      .copy {
+        padding: 12px 20px;
+        border-radius: 12px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        white-space: nowrap;
+      }
+      .copy:hover { filter: brightness(1.08); }
+      .copy.copied { background: #22c55e; }
+      .steps { margin: 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.95rem; }
+      .steps li { margin-bottom: 8px; }
+      .footer {
+        margin-top: 48px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .footer a { color: var(--accent); }
+      .hidden { display: none !important; }
     </style>
   </head>
   <body>
-    <h1>bkt builds</h1>
-    <p class="card">
-      Drop build executables into <code>dist/</code> on the <code>gh-pages</code> branch.
-      Then download them via this site.
-    </p>
+    <div class="wrap">
+      <div class="brand">bkt<span>.new</span></div>
+      <h1>Install bkt the easy way</h1>
 
-    <h2>Downloads</h2>
-    <ul>
-      <li><a href="dist/">Browse dist/ directory</a></li>
-    </ul>
+      <p style="color: var(--muted); margin-bottom: 20px;">
+        Downloads the binary from this site’s <code style="background: var(--card); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">dist/</code> folder and installs to <code style="background: var(--card); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">~/.local/bin</code> (Mac/Linux) or <code style="background: var(--card); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">%USERPROFILE%\.local\bin</code> (Windows).
+      </p>
 
-    <h2>How to publish a new build</h2>
-    <pre><code>git clone git@github.com:xentixar/bkt-builds.git
-cd bkt-builds
-git checkout gh-pages
-cp /path/to/bkt-* ./dist/
-git add dist/
-git commit -m "Add builds"
-git push origin gh-pages</code></pre>
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-os="mac" role="tab" aria-selected="true">Mac</button>
+        <button type="button" class="tab" data-os="linux" role="tab" aria-selected="false">Linux</button>
+        <button type="button" class="tab" data-os="win" role="tab" aria-selected="false">Windows</button>
+      </div>
+
+      <div class="card panel" id="panel-mac">
+        <div class="label">Copy the installation command:</div>
+        <div class="cmd-row">
+          <pre class="cmd" id="cmd-mac">/bin/bash -c "$(curl -fsSL https://xentixar.github.io/bkt-builds/install/mac)"</pre>
+          <button type="button" class="copy" data-target="cmd-mac">Copy</button>
+        </div>
+        <ol class="steps" style="margin-top: 20px;">
+          <li>Open <strong>Terminal</strong> (Spotlight: ⌘ Space → type Terminal → Return).</li>
+          <li>Paste the command and press <strong>Return</strong>.</li>
+        </ol>
+      </div>
+
+      <div class="card panel hidden" id="panel-linux">
+        <div class="label">Copy the installation command:</div>
+        <div class="cmd-row">
+          <pre class="cmd" id="cmd-linux">/bin/bash -c "$(curl -fsSL https://xentixar.github.io/bkt-builds/install/linux)"</pre>
+          <button type="button" class="copy" data-target="cmd-linux">Copy</button>
+        </div>
+        <ol class="steps" style="margin-top: 20px;">
+          <li>Open your terminal.</li>
+          <li>Paste the command and press <strong>Enter</strong>.</li>
+        </ol>
+      </div>
+
+      <div class="card panel hidden" id="panel-win">
+        <div class="label">Copy the installation command (PowerShell):</div>
+        <div class="cmd-row">
+          <pre class="cmd" id="cmd-win">irm https://xentixar.github.io/bkt-builds/install/windows.ps1 | iex</pre>
+          <button type="button" class="copy" data-target="cmd-win">Copy</button>
+        </div>
+        <ol class="steps" style="margin-top: 20px;">
+          <li>Open <strong>PowerShell</strong> (Run as user is fine).</li>
+          <li>If execution policy blocks scripts, run once: <code style="font-size: 0.85em;">Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code></li>
+          <li>Paste the command and press <strong>Enter</strong>.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="label">After install</div>
+        <pre class="cmd" style="white-space: pre-wrap;">bkt version
+bkt auth login --app-password</pre>
+      </div>
+
+      <div class="footer">
+        <p><a href="dist/">Browse dist/</a> · Binaries must be named e.g. <code>bkt-linux-amd64</code>, <code>bkt-darwin-arm64</code>, <code>bkt-windows-amd64.exe</code>.</p>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var tabs = document.querySelectorAll(".tab");
+        var panels = {
+          mac: document.getElementById("panel-mac"),
+          linux: document.getElementById("panel-linux"),
+          win: document.getElementById("panel-win"),
+        };
+
+        function show(os) {
+          Object.keys(panels).forEach(function (k) {
+            var id = k === "win" ? "win" : k;
+            var p = panels[k];
+            if (!p) return;
+            if ((os === "mac" && k === "mac") || (os === "linux" && k === "linux") || (os === "win" && k === "win")) {
+              p.classList.remove("hidden");
+            } else {
+              p.classList.add("hidden");
+            }
+          });
+          tabs.forEach(function (t) {
+            var d = t.getAttribute("data-os");
+            var on = (os === "win" && d === "win") || (os === d);
+            t.classList.toggle("active", on);
+            t.setAttribute("aria-selected", on ? "true" : "false");
+          });
+        }
+
+        tabs.forEach(function (t) {
+          t.addEventListener("click", function () {
+            show(t.getAttribute("data-os"));
+          });
+        });
+
+        document.querySelectorAll(".copy").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var id = btn.getAttribute("data-target");
+            var el = document.getElementById(id);
+            var text = el ? el.textContent.trim() : "";
+            navigator.clipboard.writeText(text).then(function () {
+              var old = btn.textContent;
+              btn.textContent = "Copied!";
+              btn.classList.add("copied");
+              setTimeout(function () {
+                btn.textContent = old;
+                btn.classList.remove("copied");
+              }, 2000);
+            });
+          });
+        });
+
+        var ua = navigator.userAgent || "";
+        if (/Windows/i.test(ua)) show("win");
+        else if (/Mac|iPhone|iPad/i.test(ua)) show("mac");
+        else show("linux");
+      })();
+    </script>
   </body>
 </html>
