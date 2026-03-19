@@ -2,7 +2,8 @@
 # Usage: irm https://xentixar.github.io/bkt-builds/install/windows.ps1 | iex
 $ErrorActionPreference = "Stop"
 
-$BaseUrl = if ($env:BKT_BUILDS_BASE_URL) { $env:BKT_BUILDS_BASE_URL } else { "https://xentixar.github.io/bkt-builds" }
+$ReleaseRepo = if ($env:BKT_RELEASE_REPO) { $env:BKT_RELEASE_REPO } else { "xentixar/bkt-builds" }
+$ApiBase = if ($env:GH_API_BASE) { $env:GH_API_BASE } else { "https://api.github.com" }
 $InstallDir = if ($env:BKT_INSTALL_DIR) { $env:BKT_INSTALL_DIR } else { "$env:USERPROFILE\.local\bin" }
 $BinName = if ($env:BKT_BIN_NAME) { $env:BKT_BIN_NAME } else { "bkt" }
 
@@ -16,29 +17,28 @@ $arch = switch ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitect
     default { throw "Unsupported architecture: $_" }
 }
 
-$urls = @(
-    "$BaseUrl/dist/${BinName}-windows-${arch}.exe",
-    "$BaseUrl/dist/${BinName}.exe"
-)
+$assetName = "${BinName}-windows-${arch}.exe"
+$releaseApi = "$ApiBase/repos/$ReleaseRepo/releases/latest"
 
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 $dest = Join-Path $InstallDir "$BinName.exe"
 $tmp = Join-Path $env:TEMP ("bkt-install-" + [Guid]::NewGuid().ToString("n") + ".exe")
 
 $ok = $false
-foreach ($u in $urls) {
-    try {
-        Invoke-WebRequest -Uri $u -OutFile $tmp -UseBasicParsing
+try {
+    $release = Invoke-RestMethod -Uri $releaseApi -UseBasicParsing
+    $asset = $release.assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
+    if ($null -ne $asset -and $asset.browser_download_url) {
+        Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $tmp -UseBasicParsing
         $ok = $true
-        Write-Host "Downloaded: $u"
-        break
-    } catch {
-        continue
+        Write-Host "Downloaded: $($asset.browser_download_url)"
     }
+} catch {
+    $ok = $false
 }
 
 if (-not $ok) {
-    Write-Error "No build found for windows/$arch. Publish to $BaseUrl/dist/ (e.g. ${BinName}-windows-${arch}.exe)"
+    Write-Error "No release asset found for $assetName in $ReleaseRepo. Check: https://github.com/$ReleaseRepo/releases"
 }
 
 Move-Item -Force $tmp $dest

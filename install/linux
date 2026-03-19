@@ -5,6 +5,8 @@ set -euo pipefail
 
 BKT_EXPECT_OS="linux"
 BKT_BUILDS_BASE_URL="${BKT_BUILDS_BASE_URL:-https://xentixar.github.io/bkt-builds}"
+BKT_RELEASE_REPO="${BKT_RELEASE_REPO:-xentixar/bkt-builds}"
+GH_API_BASE="${GH_API_BASE:-https://api.github.com}"
 INSTALL_DIR="${BKT_INSTALL_DIR:-$HOME/.local/bin}"
 BIN_NAME="${BKT_BIN_NAME:-bkt}"
 
@@ -29,11 +31,6 @@ mkdir -p "$INSTALL_DIR"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
-url_candidates=(
-  "${BKT_BUILDS_BASE_URL}/dist/${BIN_NAME}-${os}-${arch}${ext}"
-  "${BKT_BUILDS_BASE_URL}/dist/${BIN_NAME}${ext}"
-)
-
 download() {
   local url="$1"
   local out="$2"
@@ -49,18 +46,24 @@ download() {
   exit 1
 }
 
+asset_name="${BIN_NAME}-${os}-${arch}${ext}"
+api_url="${GH_API_BASE}/repos/${BKT_RELEASE_REPO}/releases/latest"
 src=""
-for u in "${url_candidates[@]}"; do
-  if download "$u" "$tmp/$BIN_NAME$ext" >/dev/null 2>&1; then
-    src="$u"
-    break
-  fi
-done
+
+if command -v curl >/dev/null 2>&1; then
+  src="$(curl -fsSL "$api_url" | sed -n "s|.*\"browser_download_url\": \"\\([^\"]*${asset_name}\\)\".*|\\1|p" | head -n1)"
+elif command -v wget >/dev/null 2>&1; then
+  src="$(wget -qO- "$api_url" | sed -n "s|.*\"browser_download_url\": \"\\([^\"]*${asset_name}\\)\".*|\\1|p" | head -n1)"
+fi
+
+if [[ -n "$src" ]]; then
+  download "$src" "$tmp/$BIN_NAME$ext" >/dev/null 2>&1 || src=""
+fi
 
 if [[ -z "$src" ]]; then
-  echo "No build found for ${os}/${arch}." >&2
-  echo "Publish binaries to: ${BKT_BUILDS_BASE_URL}/dist/" >&2
-  for u in "${url_candidates[@]}"; do echo "  tried: $u" >&2; done
+  echo "No release asset found for ${asset_name} in ${BKT_RELEASE_REPO}." >&2
+  echo "Expected latest release asset name: ${asset_name}" >&2
+  echo "Releases URL: https://github.com/${BKT_RELEASE_REPO}/releases" >&2
   exit 1
 fi
 
