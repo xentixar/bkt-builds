@@ -189,6 +189,35 @@
 bkt auth login --app-password</pre>
       </div>
 
+      <div class="card">
+        <div class="label">Auth (API tokens, no OAuth consumer)</div>
+        <p style="margin-top: 0; color: var(--muted);">
+          Bitbucket Cloud uses API tokens for CLI/API access (instead of app passwords).
+        </p>
+        <ol class="steps" style="margin-top: 10px;">
+          <li>In Bitbucket, open <strong>Personal settings → API tokens</strong> and create a token.</li>
+          <li>Grant scopes you need, such as:
+            <code style="font-size: 0.85em;">read:user:bitbucket</code>,
+            <code style="font-size: 0.85em;">read:repository:bitbucket</code>,
+            <code style="font-size: 0.85em;">write:repository:bitbucket</code>,
+            <code style="font-size: 0.85em;">admin:repository:bitbucket</code>,
+            <code style="font-size: 0.85em;">read:workspace:bitbucket</code>,
+            <code style="font-size: 0.85em;">admin:workspace:bitbucket</code>.
+          </li>
+          <li>Add optional scopes for commands you use:
+            <code style="font-size: 0.85em;">pullrequest:*:bitbucket</code>,
+            <code style="font-size: 0.85em;">pipeline:*:bitbucket</code>,
+            <code style="font-size: 0.85em;">issue:*:bitbucket</code>,
+            <code style="font-size: 0.85em;">snippet:*:bitbucket</code>.
+          </li>
+          <li>Login from bkt:
+            <pre class="cmd" style="margin-top: 8px; white-space: pre-wrap;">bkt auth login --app-password
+# Bitbucket username: your Atlassian email (e.g. you@example.com)
+# Bitbucket app password: &lt;paste the API token&gt;</pre>
+          </li>
+        </ol>
+      </div>
+
       <div class="footer">
         <p>Install page for end users.</p>
       </div>
