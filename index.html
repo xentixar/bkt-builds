@@ -190,10 +190,11 @@ bkt auth login --app-password</pre>
       </div>
 
       <div class="card">
-        <div class="label">Auth (API tokens, no OAuth consumer)</div>
+        <div class="label">Auth (API token + OAuth consumer)</div>
         <p style="margin-top: 0; color: var(--muted);">
-          Bitbucket Cloud uses API tokens for CLI/API access (instead of app passwords).
+          `bkt` supports both API token auth (recommended) and OAuth consumer auth.
         </p>
+        <h3 style="margin: 0 0 8px;">API token auth (recommended)</h3>
         <ol class="steps" style="margin-top: 10px;">
           <li>In Bitbucket, open <strong>Personal settings → API tokens</strong> and create a token.</li>
           <li>Grant scopes you need, such as:
@@ -214,6 +215,20 @@ bkt auth login --app-password</pre>
             <pre class="cmd" style="margin-top: 8px; white-space: pre-wrap;">bkt auth login --app-password
 # Bitbucket username: your Atlassian email (e.g. you@example.com)
 # Bitbucket app password: &lt;paste the API token&gt;</pre>
+          </li>
+        </ol>
+        <h3 style="margin: 16px 0 8px;">OAuth consumer auth</h3>
+        <ol class="steps" style="margin-top: 10px;">
+          <li>Create a Bitbucket OAuth consumer.</li>
+          <li>Add a local callback redirect URL (for example <code style="font-size: 0.85em;">http://127.0.0.1:&lt;port&gt;/oauth/callback</code>).</li>
+          <li>Log in with consumer credentials:
+            <pre class="cmd" style="margin-top: 8px; white-space: pre-wrap;"># with flags
+bkt auth login --client-id "$BKT_CLIENT_ID" --client-secret "$BKT_CLIENT_SECRET"
+
+# or via env vars
+export BKT_CLIENT_ID="..."
+export BKT_CLIENT_SECRET="..."
+bkt auth login</pre>
           </li>
         </ol>
       </div>
